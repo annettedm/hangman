@@ -18,7 +18,7 @@ A human player plays against a computer. A computer has a predefined file with 1
   - A human player may start one of the saved games with the word where they have left previous time. 
   - A human player may start a new game while playing a current one or once the game ends.
 
-Game
+Flow details 
   - a random word between 5 and 12 characters long 
   - number of failed attempts left 
   - a word template with correct letters and spaces 
@@ -27,4 +27,22 @@ Game
   - show to a user if a guess is correct or not 
   - show to a use when the fail attempts are over and the game is over 
 
+Game
+ - generate a word
+ - check if a letter exists
+ - check if a word is entered 
+ - manages attempts 
 
+ Manager 
+ - load game
+ - save game 
+ - select saved games or start a new one 
+ - start a game 
+ - manage letter entry - do round 
+
+State
+ - word selected by comp
+ - current round
+ - number of failed attempts
+ - incorrect letters 
+ - current word template 
