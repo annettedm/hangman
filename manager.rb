@@ -3,6 +3,10 @@ require_relative './game'
 require_relative './game_state'
 
 class Manager
+  GAME_FLOW_CONTROLS = {
+    stop_game: "stop",
+    new_game: "new"
+  }
   def initialize
     @game = Game.new
     @round = 0
@@ -15,26 +19,64 @@ class Manager
   end
 
   def run_game
-    while @game.attempts_left > 0
+    new_game = false
+
+    while @game.attempts_left > 0 && !new_game
       puts "*****************************"
       @round += 1
 
       round_instructions
-
       # @game.show_word
-      @game.manage_entry(get_entry)
+      entry = get_entry
+
+      if GAME_FLOW_CONTROLS.values.include? entry
+        new_game = manage_game_control entry
+      else
+        winner_status = @game.manage_entry(entry)
+
+        manage_winner_status(winner_status) if winner_status
+      end
+
     end
-    puts "The game is over. A computer wins. The word is #{@game.show_word}."
+
+    if new_game
+      {new_game: true}
+    else
+      puts "The game is over. A computer wins. The word is #{@game.show_word}."
+    end
   end
 
   private
 
+  def manage_game_control entry
+    if GAME_FLOW_CONTROLS[:stop_game] == entry
+      exit
+    end
+    if GAME_FLOW_CONTROLS[:new_game] == entry
+      true
+    end
+  end
+
+  def manage_winner_status status
+    if status[:winner] == "human"
+      puts "You win."
+    elsif status[:winner] == "computer"
+      puts "Computer wins as attempts are over."
+    end
+    puts "The word is '#{status[:word]}'."
+    exit
+  end
+
   def game_start_instructions
+    puts "************************************************"
+    puts "************************************************"
     puts "We play a Hangman game. A player guesses a word."
     puts "Each space in a word is for a letter. Once you guess a letter, it takes its place."
     puts "You have 7 attempts to guess the word by letters. You can enter the whole word or only a letter."
     puts "If you enter a word and it matches the computer word, you win."
-    puts "If a letter is not in the word, an attempt is used. Once 7 attempts are over, a computer wins."
+    puts "If a letter is not in the word, an attempt is utilized. Once 7 attempts are over, a computer wins."
+    puts "Enter '#{GAME_FLOW_CONTROLS[:new_game]}' to start a new game."
+    puts "Enter '#{GAME_FLOW_CONTROLS[:stop_game]}' to stop the game."
   end
 
   def round_instructions
@@ -55,6 +97,7 @@ class Manager
       puts "Please, enter letters only."
       entry = gets.chomp.downcase
     end
+
     entry
   end
 
@@ -67,29 +110,7 @@ end
 # - load game
 # - save game
 # - select saved games or start a new one
-# - start a game
-# - manage letter entry - do round
 
-
-#   - A human player guesses a word that a computer has selected for a game.
-#   - There are 7 failed attempts until a human player fails in a game for guessing a word.
-#   - Before the first round a computer shows empty spaces for the letters in a word (word template) so that a human play could see the length of the word.
-#   - A human player may suggest the whole word or only a letter in a round.
-#   - If a human player enters a correct letter, it shows in the updated word template.
-#   - If a human player enters the whole word and the word is correct, the human player wins and the game is over.
-#   - If a human player enters the whole word and the word is incorrect, it is considered to be 1 failed attempt.
-#   - If a human player enters a wrong/non-existing letter, it is considered to be 1 failed attempt.
-#   - When there are 7 failed attempts/non-existing letters, a computer player wins, the game is over.
-#   - If a human player guesses a word, a human player wins, the game is over.
 #   - A human player may save a game at any round.
 #   - A human player may start one of the saved games with the word where they have left previous time.
 #   - A human player may start a new game while playing a current one or once the game ends.
-
-# Flow details
-#   - a random word between 5 and 12 characters long
-#   - number of failed attempts left
-#   - a word template with correct letters and spaces
-#   - incorrect letters that have been entered
-#   - human entry -> case-insensitive
-#   - show to a user if a guess is correct or not
-#   - show to a use when the fail attempts are over and the game is over

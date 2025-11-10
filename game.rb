@@ -8,6 +8,7 @@ class Game
     @attempts_left = MAX_ATTEMPTS_COUNT
     @non_existent_letters = []
     @existing_letters = []
+    @winner_status = {}
     @word = Word.new
   end
 
@@ -24,38 +25,51 @@ class Game
   end
 
   def manage_entry entry
-    if letter_used? entry
-        puts "You have already used this entry."
-        return
-    end
+    return if check_for_repeat_letter entry
 
+    manage_letter(entry) if entry.length == 1
+    manage_word(entry) if entry.length > 1
+    check_template_for_fullness
+  end
 
-    if entry.length > 1
-      if @word.check_word entry
-        human_win
-      else
-        manage_failed_attempt entry
-      end
-    else
-      if @word.check_letter entry
-        add_existing_letter entry
-        word_template
-      else
-        manage_failed_attempt entry
-      end
-    end
+  def check_template_for_fullness
     if @word.template_full?
-      human_win
+      change_winner_status("human")
+    end
+  end
+
+  def manage_letter entry
+    if @word.letter_exists? entry
+      add_existing_letter entry
+      word_template
+    else
+      manage_failed_attempt entry
+    end
+  end
+
+  def change_winner_status winner
+    @winner_status[:winner] = winner
+    @winner_status[:word] = @word.word
+    @winner_status
+  end
+
+  def manage_word entry
+    if @word.word_match? entry
+      change_winner_status('human')
+    else
+      manage_failed_attempt entry
+    end
+  end
+
+  def check_for_repeat_letter entry
+    if letter_used? entry
+      puts "You have already used this entry."
+      true
     end
   end
 
   def letter_used? entry
     @non_existent_letters.include?(entry) || @existing_letters.include?(entry)
-  end
-
-  def human_win
-    puts "You win! The word you guess is '#{@word.word}'."
-    exit
   end
 
   def manage_failed_attempt entry
@@ -64,7 +78,7 @@ class Game
   end
 
   def word_template
-    @word.template
+    puts @word.template
   end
 
   def add_existing_letter entry
@@ -72,6 +86,6 @@ class Game
   end
 
   def show_word
-    puts "#{@word.word}"
+    @word.word
   end
 end
