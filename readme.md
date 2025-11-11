@@ -46,3 +46,33 @@ State
  - number of failed attempts
  - incorrect letters 
  - current word template 
+
+ Serialization 
+ - at any turn a player can save a game
+ - when a program loads, a player can 
+    - start a new game
+    - select one of the saved games
+ - if a saved game is selected, it should start at the state the program has been saved 
+
+ Serialization implementation details 
+  - array for games 
+  - serialization object to add to an array
+    - template - used for displaying games to select 
+    - word
+    - existing letters
+    - non-existing letters 
+    - round number 
+    - attempts left 
+  - serialization on a certain word 
+  - file to serialize to
+
+Deserialize 
+ - check if a file exists -> handling as a words file
+ - read array of games 
+ - deserialize into an array of game states 
+ - show templates list of the saved games
+ - once a game is selected, this object is deleted from the file
+ 
+
+Now implement the functionality where, at the start of any turn, instead of making a guess the player should also have the option to save the game. Remember what you learned about serializing objects.
+When the program first loads, add in an option that allows you to open one of your saved games, which should jump you exactly back to where you were when you saved. Play on!
