@@ -1,12 +1,12 @@
 require_relative './manager'
 
-def start_game
-  result = Manager.new.start_game
+def start_app
+  result = Manager.new.start_app
 
   if result && result[:new_game]
     puts "******************* New Game *******************"
-    start_game
+    start_app
   end
 end
 
-start_game
+start_app

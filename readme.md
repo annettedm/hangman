@@ -72,7 +72,5 @@ Deserialize
  - deserialize into an array of game states 
  - show templates list of the saved games
  - once a game is selected, this object is deleted from the file
- 
 
-Now implement the functionality where, at the start of any turn, instead of making a guess the player should also have the option to save the game. Remember what you learned about serializing objects.
-When the program first loads, add in an option that allows you to open one of your saved games, which should jump you exactly back to where you were when you saved. Play on!
+

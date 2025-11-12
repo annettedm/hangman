@@ -1,18 +1,22 @@
 require_relative './word'
 require_relative './game'
-require_relative './game_state'
+require_relative './serialization/save_game_manager'
 
 class Manager
   GAME_FLOW_CONTROLS = {
     stop_game: "stop",
-    new_game: "new"
+    new_game: "new",
+    save_game: 'save'
   }
   def initialize
     @game = Game.new
     @round = 0
+    @save_game_manager = SaveGameManager.new
   end
 
-  def start_game
+  def start_app
+    run_saved_games
+
     game_start_instructions
 
     run_game
@@ -53,7 +57,10 @@ class Manager
       exit
     end
     if GAME_FLOW_CONTROLS[:new_game] == entry
-      true
+      return true
+    end
+    if GAME_FLOW_CONTROLS[:save_game] == entry
+      @save_game_manager.save_game @game, @round
     end
   end
 
@@ -77,6 +84,7 @@ class Manager
     puts "If a letter is not in the word, an attempt is utilized. Once 7 attempts are over, a computer wins."
     puts "Enter '#{GAME_FLOW_CONTROLS[:new_game]}' to start a new game."
     puts "Enter '#{GAME_FLOW_CONTROLS[:stop_game]}' to stop the game."
+    puts "Enter '#{GAME_FLOW_CONTROLS[:save_game]}' to save the game."
   end
 
   def round_instructions
@@ -93,7 +101,7 @@ class Manager
   def get_entry
     entry = gets.chomp.downcase
 
-    while !alphabetic? entry
+    until alphabetic? entry
       puts "Please, enter letters only."
       entry = gets.chomp.downcase
     end
@@ -103,6 +111,10 @@ class Manager
 
   def alphabetic? value
     value.match?(/\A[a-zA-Z]+\z/)
+  end
+
+  def run_saved_games
+
   end
 end
 

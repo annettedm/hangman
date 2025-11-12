@@ -7,11 +7,11 @@ class Word
   end
 
   def initial_word_template
-    @template_array = Array.new(@word.length, "_")
+    @template = Array.new(@word.length, "_")
   end
 
   def template
-    @template_array.join(' ')
+    @template.join(' ')
   end
 
   def create_word
@@ -57,12 +57,12 @@ class Word
     word = @word.split ''
 
     @word.length.times do |i|
-      @template_array[i] = entry if word[i] == entry
+      @template[i] = entry if word[i] == entry
     end
   end
 
   def template_full?
-    @word == @template_array.join('')
+    @word == @template.join('')
   end
 
   def random_word lines

@@ -2,7 +2,7 @@ require_relative './word'
 
 class Game
   MAX_ATTEMPTS_COUNT = 7
-  attr_reader :attempts_left, :non_existent_letters
+  attr_reader :attempts_left, :non_existent_letters, :existing_letters
 
   def initialize
     @attempts_left = MAX_ATTEMPTS_COUNT
@@ -41,7 +41,7 @@ class Game
   def manage_letter entry
     if @word.letter_exists? entry
       add_existing_letter entry
-      word_template
+      puts word_template
     else
       manage_failed_attempt entry
     end
@@ -78,7 +78,7 @@ class Game
   end
 
   def word_template
-    puts @word.template
+    @word.template
   end
 
   def add_existing_letter entry
