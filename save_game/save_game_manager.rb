@@ -5,7 +5,7 @@ class SaveGameManager
   include Serializable
 
   FILE_NAME = 'saved_games.json'
-  attr_reader :games
+
 
   def initialize
     @games = []
@@ -16,8 +16,9 @@ class SaveGameManager
     serialize
   end
 
-  def get_games
+  def games
     deserialize
+    @games
   end
 
   private
@@ -37,7 +38,7 @@ class SaveGameManager
   end
 
   def clear_file
-    File.open(FILE_NAME, 'w') do |file| ; end
+    File.open(file_path, 'w') do |file| ; end
   end
 
   def deserialize
@@ -46,12 +47,11 @@ class SaveGameManager
     file = games_from_file
     if file.length > 0
       parsed_data = @@serializer.parse file
-      puts "parsed data: #{parsed_data}"
+      # puts "parsed data: #{parsed_data}"
       parsed_data.each do |game_string|
-        puts "game string: #{game_string}"
+        # puts "game string: #{game_string}"
         saved_game = SavedGame.new "", 0, 0, [], [], []
 
-        puts "in each deserialize saved_game.deserialize #{saved_game.unserialize(game_string)}"
         saved_game.unserialize(game_string)
         @games << saved_game
       end
@@ -66,7 +66,7 @@ class SaveGameManager
         end
       end
       @@serializer.dump games
-      File.open(FILE_NAME, 'w') do |file|
+      File.open(file_path, 'w') do |file|
         file << games
       end
     end
@@ -74,7 +74,13 @@ class SaveGameManager
 
 
   def games_from_file
-    file = File.new FILE_NAME, 'r'
+    file = File.new file_path, 'r'
     file.read
+  end
+
+  def file_path
+    file_dir = File.expand_path('../assets', __dir__)
+
+    File.join(file_dir, FILE_NAME)
   end
 end

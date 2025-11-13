@@ -13,6 +13,11 @@ class GameManager
     @round = 0
   end
 
+  def start_game
+    game_start_instructions
+
+  end
+
   private
 
   def game_start_instructions

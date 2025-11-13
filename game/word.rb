@@ -1,13 +1,17 @@
 class Word
+  FILE_NAME = 'words.txt'
+
   attr_reader :word
 
   def initialize
+    @word = ''
+
     create_word
     initial_word_template
   end
 
   def initial_word_template
-    @template = Array.new(@word.length, "_")
+    @template = Array.new(@word.length, "_") if @word.length > 0
   end
 
   def template
@@ -15,31 +19,37 @@ class Word
   end
 
   def create_word
-    file = prepare_file
-
     begin
+      file = prepare_file
       lines = File.readlines file
+      puts 'lines'
+      random_word lines unless lines == nil
     rescue Errno::ENOENT => e
       file_error_instructions e
     rescue => e
       puts "An unexpected file error occurred: #{e.class}, #{e.message}."
     end
 
-    random_word lines
   end
 
   def file_error_instructions error
-    puts "The file '#{file}' could not be found"
-    puts "Details: #{e.message}."
-    puts "Tried path: #{file_path}."
-    puts "Suggestion: Please ensure the file for selecting words is in the current working directory and is not empty."
+    puts "The file '#{FILE_NAME}' could not be found"
+    puts "Details: #{error.message}."
+    puts "Suggestion: Please ensure the file for selecting words is in the current directory and is not empty."
   end
 
   def prepare_file
-    @word = ''
-    file = 'words.txt'
-    project_dir = __dir__
-    File.join(project_dir, file)
+    file_dir = File.expand_path('../assets', __dir__)
+
+    begin
+      File.join(file_dir, FILE_NAME)
+
+    rescue Errno::ENOENT => e
+        file_error_instructions e
+    rescue => e
+        puts "An unexpected file error occurred: #{e.class}, #{e.message}."
+      end
+
   end
 
 

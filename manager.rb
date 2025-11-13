@@ -1,24 +1,19 @@
-require_relative './serialization/save_game_manager'
+require_relative './save_game/save_game_manager'
 require_relative './game/game_manager'
+require_relative './save_game/display_saved_games_manager'
 
 class Manager
+
   def initialize
-    @game_manager = GameManager.new
     @save_game_manager = SaveGameManager.new
+    @display_sg_manager = DisplaySavedGamesManager.new
+    # @game_manager = GameManager.new
   end
 
   def start_app
-    run_saved_games
+    @display_sg_manager.run_saved_games
 
-    game_start_instructions
-
-    run_game
-  end
-
-  private
-
-  def run_saved_games
-
+    # run_game
   end
 end
 
