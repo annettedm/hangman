@@ -5,7 +5,6 @@ require_relative './saved_games_display_manager'
 class Manager
 
   def initialize
-    @save_game_manager = SaveGameManager.new
     @sg_display_manager = SavedGamesDisplayManager.new
     @game_manager = GameManager.new
   end

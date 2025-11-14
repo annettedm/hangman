@@ -22,7 +22,6 @@ class Word
     begin
       file = prepare_file
       lines = File.readlines file
-      puts 'lines'
       random_word lines unless lines.nil?
     rescue Errno::ENOENT => e
       file_error_instructions e

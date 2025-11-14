@@ -1,5 +1,3 @@
-require_relative './word'
-
 class Game
   MAX_ATTEMPTS_COUNT = 7
   attr_reader :attempts_left, :non_existent_letters, :existing_letters

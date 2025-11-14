@@ -12,7 +12,6 @@ class SavedGamesDisplayManager
   end
 
   def run_saved_games
-
     saved_games = get_saved_games
 
     if !saved_games.nil? && saved_games.count.positive?
