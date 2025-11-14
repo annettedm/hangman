@@ -1,84 +1,91 @@
-class Word
-  FILE_NAME = 'words.txt'
+require_relative './word'
 
-  attr_accessor :word, :template
+class Game
+  MAX_ATTEMPTS_COUNT = 7
+  attr_reader :attempts_left, :non_existent_letters, :existing_letters
 
   def initialize
-    @word = ''
-
-    create_word
-    initial_word_template
+    @attempts_left = MAX_ATTEMPTS_COUNT
+    @non_existent_letters = []
+    @existing_letters = []
+    @winner_status = {}
+    @word = Word.new
   end
 
-  def initial_word_template
-    @template = Array.new(@word.length, "_") if @word.length > 0
+  def remove_attempt
+    @attempts_left -= 1
   end
 
-  def template
-    @template.join(' ')
+  def add_non_existent_letter letter
+    @non_existent_letters << letter
   end
 
-  def create_word
-    begin
-      file = prepare_file
-      lines = File.readlines file
-      puts 'lines'
-      random_word lines unless lines.nil?
-    rescue Errno::ENOENT => e
-      file_error_instructions e
-    rescue => e
-      puts "An unexpected file error occurred: #{e.class}, #{e.message}."
-    end
-
+  def show_non_existent_letters
+    @non_existent_letters.join(', ')
   end
 
-  def file_error_instructions error
-    puts "The file '#{FILE_NAME}' could not be found"
-    puts "Details: #{error.message}."
-    puts "Suggestion: Please ensure the file for selecting words is in the current directory and is not empty."
+  def manage_entry entry
+    return if check_for_repeat_letter entry
+
+    manage_letter(entry) if entry.length == 1
+    manage_word(entry) if entry.length > 1
+    check_template_for_fullness
   end
 
-  def prepare_file
-    file_dir = File.expand_path('../assets', __dir__)
-
-    begin
-      File.join(file_dir, FILE_NAME)
-
-    rescue Errno::ENOENT => e
-        file_error_instructions e
-    rescue => e
-        puts "An unexpected file error occurred: #{e.class}, #{e.message}."
-      end
-
-  end
-
-
-  def letter_exists? entry
-    if @word.include? entry
-      modify_template(entry)
+  def check_template_for_fullness
+    if @word.template_full?
+      change_winner_status("human")
     end
   end
 
-  def word_match? entry
-    @word == entry
-  end
-
-  def modify_template entry
-    word = @word.split ''
-
-    @word.length.times do |i|
-      @template[i] = entry if word[i] == entry
+  def manage_letter entry
+    if @word.letter_exists? entry
+      add_existing_letter entry
+      puts word_template
+    else
+      manage_failed_attempt entry
     end
   end
 
-  def template_full?
-    @word == @template.join('')
+  def change_winner_status winner
+    @winner_status[:winner] = winner
+    @winner_status[:word] = @word.word
+    @winner_status
   end
 
-  def random_word lines
-    until @word.length.between?(5, 12)
-      number = Random.rand(10000)
-      @word = lines[number].chomp
+  def manage_word entry
+    if @word.word_match? entry
+      change_winner_status('human')
+    else
+      manage_failed_attempt entry
     end
+  end
+
+  def check_for_repeat_letter entry
+    if letter_used? entry
+      puts "You have already used this entry."
+      true
+    end
+  end
+
+  def letter_used? entry
+    @non_existent_letters.include?(entry) || @existing_letters.include?(entry)
+  end
+
+  def manage_failed_attempt entry
+    remove_attempt
+    add_non_existent_letter entry
+  end
+
+  def word_template
+    @word.template
+  end
+
+  def add_existing_letter entry
+    @existing_letters << entry
+  end
+
+  def show_word
+    @word.word
   end
 end
