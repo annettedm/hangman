@@ -1,7 +1,7 @@
 class Word
   FILE_NAME = 'words.txt'
 
-  attr_reader :word
+  attr_accessor :word, :template
 
   def initialize
     @word = ''
@@ -23,7 +23,7 @@ class Word
       file = prepare_file
       lines = File.readlines file
       puts 'lines'
-      random_word lines unless lines == nil
+      random_word lines unless lines.nil?
     rescue Errno::ENOENT => e
       file_error_instructions e
     rescue => e

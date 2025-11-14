@@ -1,5 +1,5 @@
-require_relative './saved_game'
-require_relative './serializable'
+require_relative '../models/saved_game'
+require_relative '../modules/serializable'
 
 class SaveGameManager
   include Serializable

@@ -1,4 +1,4 @@
-require_relative './manager'
+require_relative './managers/manager'
 
 def start_app
   result = Manager.new.start_app

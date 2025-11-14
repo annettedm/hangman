@@ -1,4 +1,4 @@
-require_relative './serializable'
+require_relative '../modules/serializable'
 
 class SavedGame
   include Serializable

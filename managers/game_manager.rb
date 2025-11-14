@@ -1,5 +1,5 @@
-require_relative './game'
-require_relative './word'
+require_relative '../models/game'
+require_relative '../models/word'
 
 class GameManager
   GAME_FLOW_CONTROLS = {
@@ -13,21 +13,23 @@ class GameManager
     @round = 0
   end
 
-  def start_game
-    game_start_instructions
+  def start_game saved_game
+    game_start_instructions saved_game&.attempts_left
 
+    run_game saved_game
   end
 
   private
 
-  def game_start_instructions
+  def game_start_instructions attempts = nil
+    attempts ||= @game.attempts_left
     puts "************************************************"
     puts "************************************************"
     puts "We play a Hangman game. A player guesses a word."
     puts "Each space in a word is for a letter. Once you guess a letter, it takes its place."
-    puts "You have 7 attempts to guess the word by letters. You can enter the whole word or only a letter."
+    puts "You have #{attempts} attempts to guess the word by letters. You can enter the whole word or only a letter."
     puts "If you enter a word and it matches the computer word, you win."
-    puts "If a letter is not in the word, an attempt is utilized. Once 7 attempts are over, a computer wins."
+    puts "If a letter is not in the word, an attempt is utilized. Once #{attempts} attempts are over, a computer wins."
     puts "Enter '#{GAME_FLOW_CONTROLS[:new_game]}' to start a new game."
     puts "Enter '#{GAME_FLOW_CONTROLS[:stop_game]}' to stop the game."
     puts "Enter '#{GAME_FLOW_CONTROLS[:save_game]}' to save the game."
@@ -81,8 +83,20 @@ class GameManager
     end
   end
 
-  def run_game
+  def match_saved_game saved_game = nil
+    if !saved_game.nil? && saved_game.is_a?(SavedGame)
+      @game.set_word saved_game.word
+      @round = saved_game.round
+      @game.attempts_left = saved_game.attempts_left
+      @game.non_existent_letters = saved_game.non_existent_letters
+      @game.existing_letters = saved_game.existing_letters
+      @game.set_template(saved_game.template)
+    end
+  end
+
+  def run_game saved_game = nil
     new_game = false
+    match_saved_game saved_game
 
     while @game.attempts_left > 0 && !new_game
       puts "*****************************"

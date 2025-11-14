@@ -1,17 +1,19 @@
-require_relative './save_game/save_game_manager'
-require_relative './game/game_manager'
-require_relative './save_game/display_saved_games_manager'
+require_relative './save_game_manager'
+require_relative './game_manager'
+require_relative './saved_games_display_manager'
 
 class Manager
 
   def initialize
     @save_game_manager = SaveGameManager.new
-    @display_sg_manager = DisplaySavedGamesManager.new
-    # @game_manager = GameManager.new
+    @sg_display_manager = SavedGamesDisplayManager.new
+    @game_manager = GameManager.new
   end
 
   def start_app
-    @display_sg_manager.run_saved_games
+    saved_game = @sg_display_manager.run_saved_games
+
+    @game_manager.start_game saved_game
 
     # run_game
   end
