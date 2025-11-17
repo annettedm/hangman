@@ -2,8 +2,11 @@ require_relative './game_serializer'
 require_relative '../models/word'
 require_relative '../models/game'
 require_relative './game_loader'
+require_relative '../modules/mappable'
 
 class Manager
+  include Mappable
+
   GAME_FLOW_CONTROLS = {
       stop_game: "stop",
       new_game: "new",
@@ -16,7 +19,6 @@ class Manager
 
   def start_app
     saved_game = @game_loader.run_saved_games
-    p saved_game
 
     start_game saved_game
   end
@@ -32,6 +34,36 @@ class Manager
     end
 
     game_start_instructions @game.attempts_left
+
+    run_game
+  end
+
+  def run_game
+    new_game = false
+
+    while @game.attempts_left > 0 && !new_game
+      puts "*****************************"
+      @game.round += 1
+
+      round_instructions
+      # @game.show_word
+      entry = get_entry
+
+      if GAME_FLOW_CONTROLS.values.include? entry
+        new_game = manage_game_control entry
+      else
+        winner_status = @game.manage_entry(entry)
+
+        manage_winner_status(winner_status) if winner_status
+      end
+
+    end
+
+    if new_game
+      {new_game: true}
+    else
+      puts "The game is over. A computer wins. The word is #{@game.show_word}."
+    end
   end
 
   def game_start_instructions attempts
@@ -47,16 +79,14 @@ class Manager
     puts "Enter '#{GAME_FLOW_CONTROLS[:save_game]}' to save the game."
   end
 
- def map_saved_game_to_game_word saved_game
-   if saved_game.is_a?(SavedGame)
-     @word.word = saved_game.word
-     @round = saved_game.round
-     @game.attempts_left = saved_game.attempts_left
-     @game.non_existent_letters = saved_game.non_existent_letters
-     @game.existing_letters = saved_game.existing_letters
-     @word.template = saved_game.template
-   end
- end
+  def round_instructions
+      puts "Round #{@game.round}"
+      puts "You have #{@game.attempts_left} attempts."
+      p @game
+      puts "Already used: #{@game.non_existent_letters.join(', ')}" if @game.non_existent_letters.length > 0
+      puts @word.template_to_s
+
+  end
 end
 
 # Manager

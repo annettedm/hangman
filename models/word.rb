@@ -1,7 +1,8 @@
 class Word
   FILE_NAME = 'words.txt'
 
-  attr_accessor :word, :template
+  attr_accessor :word
+  attr_reader :template
 
   def initialize
     @word = ''
@@ -16,6 +17,10 @@ class Word
 
   def template_to_s
     @template.join(' ')
+  end
+
+  def template= (string)
+    @template = string.gsub(/\s+/i, '').split('')
   end
 
   def create_word

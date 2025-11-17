@@ -1,13 +1,13 @@
 class Game
   MAX_ATTEMPTS_COUNT = 7
-  attr_accessor :attempts_left, :non_existent_letters, :existing_letters
+  attr_accessor :attempts_left, :non_existent_letters, :existent_letters, :round
 
   def initialize
     @attempts_left = MAX_ATTEMPTS_COUNT
     @non_existent_letters = []
-    @existing_letters = []
+    @existent_letters = []
     @winner_status = {}
-    @word = Word.new
+    @round = 0
   end
 
   def remove_attempt
@@ -38,7 +38,7 @@ class Game
 
   def manage_letter entry
     if @word.letter_exists? entry
-      add_existing_letter entry
+      add_existent_letter entry
       puts word_template
     else
       manage_failed_attempt entry
@@ -67,7 +67,7 @@ class Game
   end
 
   def letter_used? entry
-    @non_existent_letters.include?(entry) || @existing_letters.include?(entry)
+    @non_existent_letters.include?(entry) || @existent_letters.include?(entry)
   end
 
   def manage_failed_attempt entry
@@ -79,8 +79,8 @@ class Game
     @word.template_to_s
   end
 
-  def add_existing_letter entry
-    @existing_letters << entry
+  def add_existent_letter entry
+    @existent_letters << entry
   end
 
   def show_word

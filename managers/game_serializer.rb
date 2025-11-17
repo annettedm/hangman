@@ -1,8 +1,10 @@
 require_relative '../models/saved_game'
 require_relative '../modules/serializable'
+require_relative '../modules/mappable'
 
 class GameSerializer
   include Serializable
+  include Mappable
 
   FILE_NAME = 'saved_games.json'
 
@@ -23,22 +25,8 @@ class GameSerializer
 
   private
 
-  def add_game game, word, round
-    @games << map_game_to_saved_game(game, word, round)
-  end
-
-  def map_game_to_saved_game game, word, round
-    SavedGame.new(
-      word.word,
-      round,
-      game.attempts_left,
-      game.non_existent_letters,
-      game.existing_letters,
-      word.template)
-  end
-
-  def clear_file
-    File.open(file_path, 'w') do |file| ; end
+  def add_game game, word
+    @games << map_game_word_to_saved_game(game, word)
   end
 
   def deserialize

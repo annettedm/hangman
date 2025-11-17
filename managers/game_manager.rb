@@ -11,13 +11,6 @@ class GameManager
 
   private
 
-  def round_instructions
-    puts "Round #{@round}"
-    puts "You have #{@game.attempts_left} attempts."
-    puts "Already used: #{@game.non_existent_letters.join(', ')}" if @game.non_existent_letters.length > 0
-    puts word_template
-  end
-
   def word_template
       @game.word_template
   end
@@ -55,39 +48,10 @@ class GameManager
       return true
     end
     if GAME_FLOW_CONTROLS[:save_game] == entry
-      @save_game_manager.save_game @game, @word, @round
+      @save_game_manager.save_game @game, @word
     end
   end
 
 
-
-  def run_game saved_game = nil
-    new_game = false
-    match_saved_game saved_game
-
-    while @game.attempts_left > 0 && !new_game
-      puts "*****************************"
-      @round += 1
-
-      round_instructions
-      # @game.show_word
-      entry = get_entry
-
-      if GAME_FLOW_CONTROLS.values.include? entry
-        new_game = manage_game_control entry
-      else
-        winner_status = @game.manage_entry(entry)
-
-        manage_winner_status(winner_status) if winner_status
-      end
-
-    end
-
-    if new_game
-      {new_game: true}
-    else
-      puts "The game is over. A computer wins. The word is #{@game.show_word}."
-    end
-  end
 
 end

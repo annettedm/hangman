@@ -27,8 +27,8 @@ end
 #   - serialization object to add to an array
 #     - template - used for displaying games to select
 #     - word
-#     - existing letters
-#     - non-existing letters
+#     - existent letters
+#     - non-existent letters
 #     - round number
 #     - attempts left
 #   - serialization on a certain word

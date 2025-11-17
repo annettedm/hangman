@@ -3,14 +3,14 @@ require_relative '../modules/serializable'
 class SavedGame
   include Serializable
 
-  attr_accessor :word, :round, :attempts_left, :non_existent_letters, :existing_letters, :template
+  attr_accessor :word, :round, :attempts_left, :non_existent_letters, :existent_letters, :template
 
-  def initialize word, round, attempts_left, non_existent_letters, existing_letters, template
+  def initialize word, round, attempts_left, non_existent_letters, existent_letters, template
     @word = word
     @round = round
     @attempts_left = attempts_left
-    @non_existing_letters = non_existent_letters
-    @existing_letters = existing_letters
+    @non_existent_letters = non_existent_letters
+    @existent_letters = existent_letters
     @template = template
   end
 end
@@ -20,8 +20,8 @@ end
 #   - serialization object to add to an array
 #     - template - used for displaying games to select
 #     - word
-#     - existing letters
-#     - non-existing letters
+#     - existent letters
+#     - non-existent letters
 #     - round number
 #     - attempts left
 #   - serialization on a certain word

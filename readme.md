@@ -11,8 +11,8 @@ A human player plays against a computer. A computer has a predefined file with 1
   - If a human player enters a correct letter, it shows in the updated word template.
   - If a human player enters the whole word and the word is correct, the human player wins and the game is over.
   - If a human player enters the whole word and the word is incorrect, it is considered to be 1 failed attempt.
-  - If a human player enters a wrong/non-existing letter, it is considered to be 1 failed attempt.
-  - When there are 7 failed attempts/non-existing letters, a computer player wins, the game is over.
+  - If a human player enters a wrong/non-existent letter, it is considered to be 1 failed attempt.
+  - When there are 7 failed attempts/non-existent letters, a computer player wins, the game is over.
   - If a human player guesses a word, a human player wins, the game is over.
   - A human player may save a game at any round.
   - A human player may start one of the saved games with the word where they have left previous time. 
@@ -59,8 +59,8 @@ State
   - serialization object to add to an array
     - template - used for displaying games to select 
     - word
-    - existing letters
-    - non-existing letters 
+    - existent letters
+    - non-existent letters 
     - round number 
     - attempts left 
   - serialization on a certain word 
