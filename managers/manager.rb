@@ -13,8 +13,15 @@ class Manager
       save_game: 'save'
     }
 
+  ENTRY_RESTRICTIONS = {
+    alpha: "alphabetic",
+    number: "numeric"
+  }
+
   def initialize
     @game_loader = GameLoader.new
+    @game_serializer = GameSerializer.new
+    @winner_status = {}
   end
 
   def start_app
@@ -47,12 +54,12 @@ class Manager
 
       round_instructions
       # @game.show_word
-      entry = get_entry
+      entry = get_entry ENTRY_RESTRICTIONS[:alpha]
 
       if GAME_FLOW_CONTROLS.values.include? entry
         new_game = manage_game_control entry
       else
-        winner_status = @game.manage_entry(entry)
+        winner_status = manage_entry(entry)
 
         manage_winner_status(winner_status) if winner_status
       end
@@ -62,7 +69,7 @@ class Manager
     if new_game
       {new_game: true}
     else
-      puts "The game is over. A computer wins. The word is #{@game.show_word}."
+      puts "The game is over. A computer wins. The word is #{@word.word}."
     end
   end
 
@@ -85,7 +92,82 @@ class Manager
       p @game
       puts "Already used: #{@game.non_existent_letters.join(', ')}" if @game.non_existent_letters.length > 0
       puts @word.template_to_s
+  end
 
+  def get_entry entry_restrictions
+    entry = gets.chomp.downcase
+
+    if entry_restrictions == ENTRY_RESTRICTIONS[:alpha]
+      until alphabetic? entry
+        puts "Please, enter letters only."
+        entry = gets.chomp.downcase
+      end
+    end
+
+    entry
+  end
+
+  def alphabetic? value
+    value.match?(/\A[a-zA-Z]+\z/)
+  end
+
+  def manage_game_control entry
+    if GAME_FLOW_CONTROLS[:stop_game] == entry
+      exit
+    end
+    if GAME_FLOW_CONTROLS[:new_game] == entry
+      return true
+    end
+    if GAME_FLOW_CONTROLS[:save_game] == entry
+      @save_game_manager.save_game @game, @word
+    end
+  end
+
+  def manage_entry entry
+      return if @game.check_for_repeat_letter(entry)
+
+      manage_letter(entry) if entry.length == 1
+      manage_word(entry) if entry.length > 1
+      check_template_for_fullness
+  end
+
+  def manage_letter entry
+    if @word.letter_exists? entry
+      @game.add_existent_letter entry
+      puts @word.template_to_s
+    else
+      @game.manage_failed_attempt entry
+    end
+  end
+
+  def manage_winner_status status
+    if status[:winner] == "human"
+      puts "You win."
+    elsif status[:winner] == "computer"
+      puts "Computer wins as attempts are over."
+    end
+    puts "The word is '#{status[:word]}'."
+    exit
+  end
+
+  def manage_word entry
+    if @word.word_match? entry
+      change_winner_status('human')
+    else
+      @game.manage_failed_attempt entry
+    end
+  end
+
+  def change_winner_status winner
+    @winner_status[:winner] = winner
+    @winner_status[:word] = @word.word
+    @winner_status
+  end
+
+  def check_template_for_fullness
+    if @word.template_full?
+      change_winner_status("human")
+    end
   end
 end
 
