@@ -2,11 +2,7 @@ require_relative '../models/game'
 require_relative '../models/word'
 
 class GameManager
-  GAME_FLOW_CONTROLS = {
-    stop_game: "stop",
-    new_game: "new",
-    save_game: 'save'
-  }
+
 
   def initialize
     @game = Game.new

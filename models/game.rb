@@ -76,7 +76,7 @@ class Game
   end
 
   def word_template
-    @word.template
+    @word.template_to_s
   end
 
   def add_existing_letter entry

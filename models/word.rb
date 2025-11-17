@@ -1,8 +1,7 @@
 class Word
   FILE_NAME = 'words.txt'
 
-  attr_accessor :word
-  attr_reader :template
+  attr_accessor :word, :template
 
   def initialize
     @word = ''
@@ -15,7 +14,7 @@ class Word
     @template = Array.new(@word.length, "_") if @word.length > 0
   end
 
-  def template
+  def template_to_s
     @template.join(' ')
   end
 

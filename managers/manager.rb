@@ -1,14 +1,18 @@
 require_relative './game_serializer'
-require_relative './models/word'
+require_relative '../models/word'
+require_relative '../models/game'
 require_relative './game_loader'
 
 class Manager
+  GAME_FLOW_CONTROLS = {
+      stop_game: "stop",
+      new_game: "new",
+      save_game: 'save'
+    }
 
   def initialize
     @game_loader = GameLoader.new
   end
-
-  private
 
   def start_app
     saved_game = @game_loader.run_saved_games
@@ -17,19 +21,20 @@ class Manager
     start_game saved_game
   end
 
-  def start_game game
+  private
+
+  def start_game saved_game
     @word = Word.new
     @game = Game.new
 
-    unless game.nil?
-      map_saved_game_to_game_word game
+    unless saved_game.nil?
+      map_saved_game_to_game_word saved_game
     end
 
     game_start_instructions @game.attempts_left
   end
 
-  def game_start_instructions attempts = nil
-    attempts ||= @game.attempts_left
+  def game_start_instructions attempts
     puts "************************************************"
     puts "************************************************"
     puts "We play a Hangman game. A player guesses a word."
@@ -42,8 +47,8 @@ class Manager
     puts "Enter '#{GAME_FLOW_CONTROLS[:save_game]}' to save the game."
   end
 
- def match_saved_game saved_game = nil
-   if !saved_game.nil? && saved_game.is_a?(SavedGame)
+ def map_saved_game_to_game_word saved_game
+   if saved_game.is_a?(SavedGame)
      @word.word = saved_game.word
      @round = saved_game.round
      @game.attempts_left = saved_game.attempts_left
