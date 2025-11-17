@@ -1,7 +1,7 @@
 require_relative '../models/saved_game'
 require_relative '../modules/serializable'
 
-class SaveGameManager
+class GameSerializer
   include Serializable
 
   FILE_NAME = 'saved_games.json'

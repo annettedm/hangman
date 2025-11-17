@@ -1,6 +1,6 @@
-require_relative './save_game_manager'
+require_relative './game_serializer'
 
-class SavedGamesDisplayManager
+class GameLoader
   attr_reader :game_index
 
   START_GAME_FLOW_CONTROLS = {
@@ -8,7 +8,7 @@ class SavedGamesDisplayManager
   }
 
   def initialize
-    @save_game_manager = SaveGameManager.new
+    @save_game_manager = GameSerializer.new
   end
 
   def run_saved_games
