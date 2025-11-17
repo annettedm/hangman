@@ -59,20 +59,11 @@ class GameManager
       return true
     end
     if GAME_FLOW_CONTROLS[:save_game] == entry
-      @save_game_manager.save_game @game, @round
+      @save_game_manager.save_game @game, @word, @round
     end
   end
 
-  def match_saved_game saved_game = nil
-    if !saved_game.nil? && saved_game.is_a?(SavedGame)
-      @game.set_word saved_game.word
-      @round = saved_game.round
-      @game.attempts_left = saved_game.attempts_left
-      @game.non_existent_letters = saved_game.non_existent_letters
-      @game.existing_letters = saved_game.existing_letters
-      @game.set_template(saved_game.template)
-    end
-  end
+
 
   def run_game saved_game = nil
     new_game = false

@@ -11,8 +11,8 @@ class GameSerializer
     @games = []
   end
 
-  def save_game game, round
-    add_game game, round
+  def save_game game, word, round
+    add_game game, word, round
     serialize
   end
 
@@ -23,18 +23,18 @@ class GameSerializer
 
   private
 
-  def add_game game, round
-    @games << match_game_to_saved_game(game, round)
+  def add_game game, word, round
+    @games << map_game_to_saved_game(game, word, round)
   end
 
-  def match_game_to_saved_game game, round
+  def map_game_to_saved_game game, word, round
     SavedGame.new(
-      game.show_word,
+      word.word,
       round,
       game.attempts_left,
       game.non_existent_letters,
       game.existing_letters,
-      game.word_template)
+      word.template)
   end
 
   def clear_file

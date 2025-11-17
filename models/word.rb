@@ -1,7 +1,8 @@
 class Word
   FILE_NAME = 'words.txt'
 
-  attr_accessor :word, :template
+  attr_accessor :word
+  attr_reader :template
 
   def initialize
     @word = ''
@@ -50,7 +51,6 @@ class Word
       end
 
   end
-
 
   def letter_exists? entry
     if @word.include? entry
