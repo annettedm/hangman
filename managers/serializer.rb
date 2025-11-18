@@ -22,7 +22,11 @@ class Serializer
     if index.between?(0, @games.size - 1)
       @games.delete_at index
       p @games
-      serialize
+      if @games.length > 0
+        serialize
+      else
+
+      end
     end
   end
 

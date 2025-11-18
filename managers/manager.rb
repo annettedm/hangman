@@ -57,7 +57,9 @@ class Manager
           return :new
         end
       else
-        process_winner(@game.process_entry(entry))
+        result = @game.process_entry(entry)
+        process_winner result
+        return ask_next if result == :human
       end
     end
 
