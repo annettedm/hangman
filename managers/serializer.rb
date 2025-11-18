@@ -21,11 +21,10 @@ class Serializer
   def remove_saved_game index
     if index.between?(0, @games.size - 1)
       @games.delete_at index
-      p @games
       if @games.length > 0
         serialize
       else
-
+        clear_file
       end
     end
   end
@@ -34,6 +33,10 @@ class Serializer
 
   def add_game game
     @games << map_game_to_saved(game)
+  end
+
+  def clear_file
+    File.open(file_path, 'w') do |file| ; end
   end
 
   def deserialize
