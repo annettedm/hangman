@@ -2,19 +2,18 @@ require_relative '../models/saved_game'
 require_relative '../modules/serializable'
 require_relative '../modules/mappable'
 
-class GameSerializer
+class Serializer
   include Serializable
   include Mappable
 
   FILE_NAME = 'saved_games.json'
 
-
   def initialize
     @games = []
   end
 
-  def save_game game, word, round
-    add_game game, word, round
+  def save_game game
+    add_game game
     serialize
   end
 
@@ -25,8 +24,8 @@ class GameSerializer
 
   private
 
-  def add_game game, word
-    @games << map_game_word_to_saved_game(game, word)
+  def add_game game
+    @games << map_game_to_saved(game)
   end
 
   def deserialize

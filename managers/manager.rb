@@ -1,172 +1,116 @@
-require_relative './game_serializer'
+require_relative './serializer'
+require_relative './loader'
 require_relative '../models/word'
 require_relative '../models/game'
-require_relative './game_loader'
-require_relative '../modules/mappable'
+require_relative '../modules/instructable'
+require_relative '../modules/checkable'
+require_relative '../modules/winnerable'
 
 class Manager
-  include Mappable
+  include Instructable
+  include Checkable
+  include Winnerable
 
-  GAME_FLOW_CONTROLS = {
-      stop_game: "stop",
-      new_game: "new",
-      save_game: 'save'
-    }
-
-  ENTRY_RESTRICTIONS = {
-    alpha: "alphabetic",
-    number: "numeric"
+  CONTROLS = {
+    exit_game: "exit",
+    new_game: "new",
+    save_game: 'save'
   }
 
   def initialize
-    @game_loader = GameLoader.new
-    @game_serializer = GameSerializer.new
-    @winner_status = {}
+    @serializer = Serializer.new
+    @loader = Loader.new @serializer
   end
 
   def start_app
-    saved_game = @game_loader.run_saved_games
+    saved_game = @loader.run_saved_games
 
     start_game saved_game
   end
 
   private
 
+  def ask_next
+    control_instructions
+
+    process_control get_control_entry
+
+  end
+
   def start_game saved_game
-    @word = Word.new
     @game = Game.new
 
     unless saved_game.nil?
-      map_saved_game_to_game_word saved_game
+      @game.map_saved_to_game saved_game
     end
 
-    game_start_instructions @game.attempts_left
+    game_start_instructions
 
     run_game
   end
 
   def run_game
-    new_game = false
-
-    while @game.attempts_left > 0 && !new_game
-      puts "*****************************"
-      @game.round += 1
+    while @game.attempts.positive?
+      @game.add_round
 
       round_instructions
-      # @game.show_word
-      entry = get_entry ENTRY_RESTRICTIONS[:alpha]
+      puts "the word is #{@game.show_word}"
+      entry = get_alpha_entry
 
-      if GAME_FLOW_CONTROLS.values.include? entry
-        new_game = manage_game_control entry
+      if include_control? entry
+        puts 'control'
+        if process_control(entry) == :new
+          return :new
+        end
       else
-        winner_status = manage_entry(entry)
-
-        manage_winner_status(winner_status) if winner_status
+        process_winner(@game.process_entry(entry))
       end
-
     end
 
-    if new_game
-      {new_game: true}
-    else
-      puts "The game is over. A computer wins. The word is #{@word.word}."
-    end
+    puts "The game is over. A computer wins. The word is #{@game.show_word}."
   end
 
-  def game_start_instructions attempts
-    puts "************************************************"
-    puts "************************************************"
-    puts "We play a Hangman game. A player guesses a word."
-    puts "Each space in a word is for a letter. Once you guess a letter, it takes its place."
-    puts "You have #{attempts} attempts to guess the word by letters. You can enter the whole word or only a letter."
-    puts "If you enter a word and it matches the computer word, you win."
-    puts "If a letter is not in the word, an attempt is utilized. Once #{attempts} attempts are over, a computer wins."
-    puts "Enter '#{GAME_FLOW_CONTROLS[:new_game]}' to start a new game."
-    puts "Enter '#{GAME_FLOW_CONTROLS[:stop_game]}' to stop the game."
-    puts "Enter '#{GAME_FLOW_CONTROLS[:save_game]}' to save the game."
+  def get_alpha_entry
+    get_entry :alpha
   end
 
-  def round_instructions
-      puts "Round #{@game.round}"
-      puts "You have #{@game.attempts_left} attempts."
-      p @game
-      puts "Already used: #{@game.non_existent_letters.join(', ')}" if @game.non_existent_letters.length > 0
-      puts @word.template_to_s
+  def get_control_entry
+    get_entry :control
   end
 
-  def get_entry entry_restrictions
+  def get_entry type
     entry = gets.chomp.downcase
 
-    if entry_restrictions == ENTRY_RESTRICTIONS[:alpha]
+    if type == :alpha
       until alphabetic? entry
         puts "Please, enter letters only."
         entry = gets.chomp.downcase
       end
+    elsif type == :control
+      until entry == CONTROLS[:new_game] || entry == CONTROLS[:exit_game]
+        puts "Please, enter '#{CONTROLS[:new_game]}' or '#{CONTROLS[:exit_game]}' only."
+        entry = gets.chomp.downcase
+      end
     end
-
     entry
   end
 
-  def alphabetic? value
-    value.match?(/\A[a-zA-Z]+\z/)
+  def include_control? entry
+    CONTROLS.values.include? entry
   end
 
-  def manage_game_control entry
-    if GAME_FLOW_CONTROLS[:stop_game] == entry
+  def process_control entry
+    if CONTROLS[:exit_game] == entry
+      puts "The game is stopped."
       exit
     end
-    if GAME_FLOW_CONTROLS[:new_game] == entry
-      return true
+    if CONTROLS[:new_game] == entry
+      return :new
     end
-    if GAME_FLOW_CONTROLS[:save_game] == entry
-      @save_game_manager.save_game @game, @word
-    end
-  end
-
-  def manage_entry entry
-      return if @game.check_for_repeat_letter(entry)
-
-      manage_letter(entry) if entry.length == 1
-      manage_word(entry) if entry.length > 1
-      check_template_for_fullness
-  end
-
-  def manage_letter entry
-    if @word.letter_exists? entry
-      @game.add_existent_letter entry
-      puts @word.template_to_s
-    else
-      @game.manage_failed_attempt entry
-    end
-  end
-
-  def manage_winner_status status
-    if status[:winner] == "human"
-      puts "You win."
-    elsif status[:winner] == "computer"
-      puts "Computer wins as attempts are over."
-    end
-    puts "The word is '#{status[:word]}'."
-    exit
-  end
-
-  def manage_word entry
-    if @word.word_match? entry
-      change_winner_status('human')
-    else
-      @game.manage_failed_attempt entry
-    end
-  end
-
-  def change_winner_status winner
-    @winner_status[:winner] = winner
-    @winner_status[:word] = @word.word
-    @winner_status
-  end
-
-  def check_template_for_fullness
-    if @word.template_full?
-      change_winner_status("human")
+    if CONTROLS[:save_game] == entry
+      puts "got save"
+      @serializer.save_game @game
+      ask_next
     end
   end
 end

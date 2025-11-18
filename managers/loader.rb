@@ -1,14 +1,14 @@
-require_relative './game_serializer'
+require_relative './serializer'
 
-class GameLoader
+class Loader
   attr_reader :game_index
 
   START_GAME_FLOW_CONTROLS = {
     start_new_game: 0
   }
 
-  def initialize
-    @save_game_manager = GameSerializer.new
+  def initialize serializer
+    @serializer = serializer
   end
 
   def run_saved_games
@@ -22,14 +22,14 @@ class GameLoader
 
       player_entry saved_games_count
 
-      saved_games[@game_index] unless @game_index.nil?
+      {@game_index => saved_games[@game_index]} unless @game_index.nil?
     end
   end
 
   private
 
   def get_saved_games
-    @save_game_manager.games
+    @serializer.games
   end
 
   def saved_games_instructions saved_games_count

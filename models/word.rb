@@ -49,11 +49,10 @@ class Word
       File.join(file_dir, FILE_NAME)
 
     rescue Errno::ENOENT => e
-        file_error_instructions e
+      file_error_instructions e
     rescue => e
-        puts "An unexpected file error occurred: #{e.class}, #{e.message}."
-      end
-
+      puts "An unexpected file error occurred: #{e.class}, #{e.message}."
+    end
   end
 
   def letter_exists? entry
