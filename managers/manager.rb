@@ -34,18 +34,13 @@ class Manager
     control_instructions
 
     process_control get_control_entry
-
   end
 
   def start_game saved_game
     @game = Game.new
 
-    unless saved_game.nil?
-      @game.map_saved_to_game saved_game
-    end
-
+    process_saved_game_hash saved_game
     game_start_instructions
-
     run_game
   end
 
@@ -54,11 +49,10 @@ class Manager
       @game.add_round
 
       round_instructions
-      puts "the word is #{@game.show_word}"
+      # puts "the word is #{@game.show_word}"
       entry = get_alpha_entry
 
       if include_control? entry
-        puts 'control'
         if process_control(entry) == :new
           return :new
         end
@@ -67,7 +61,9 @@ class Manager
       end
     end
 
+    @serializer.remove_saved_game @saved_game_index
     puts "The game is over. A computer wins. The word is #{@game.show_word}."
+    ask_next
   end
 
   def get_alpha_entry
@@ -101,16 +97,30 @@ class Manager
 
   def process_control entry
     if CONTROLS[:exit_game] == entry
-      puts "The game is stopped."
+      puts "You quit the game."
       exit
     end
     if CONTROLS[:new_game] == entry
       return :new
     end
     if CONTROLS[:save_game] == entry
-      puts "got save"
+      remove_saved_game
       @serializer.save_game @game
       ask_next
+    end
+  end
+
+  def process_saved_game_hash saved_game
+    unless saved_game.nil?
+      @saved_game_index = saved_game.keys[0]
+
+      @game.map_saved_to_game saved_game[@saved_game_index]
+    end
+  end
+
+  def remove_saved_game
+    unless @saved_game_index.nil?
+      @serializer.remove_saved_game @saved_game_index
     end
   end
 end

@@ -22,7 +22,6 @@ module Instructable
 
   def control_instructions
     puts "*****************************"
-    puts "You have saved the game."
     puts "Enter '#{Manager::CONTROLS[:new_game]}' to start a new game."
     puts "Enter '#{Manager::CONTROLS[:exit_game]}' to stop the game."
   end

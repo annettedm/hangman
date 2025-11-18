@@ -8,18 +8,22 @@ class Serializer
 
   FILE_NAME = 'saved_games.json'
 
-  def initialize
-    @games = []
-  end
-
   def save_game game
     add_game game
     serialize
+    puts "You have saved the game."
   end
 
   def games
-    deserialize
-    @games
+    @games ||= deserialize
+  end
+
+  def remove_saved_game index
+    if index.between?(0, @games.size - 1)
+      @games.delete_at index
+      p @games
+      serialize
+    end
   end
 
   private
@@ -29,7 +33,7 @@ class Serializer
   end
 
   def deserialize
-    @games = []
+    games_list = []
 
     file = games_from_file
     if file.length > 0
@@ -40,9 +44,10 @@ class Serializer
         saved_game = SavedGame.new "", 0, 0, [], [], []
 
         saved_game.unserialize(game_string)
-        @games << saved_game
+        games_list << saved_game
       end
     end
+    games_list
   end
 
   def serialize
