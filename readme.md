@@ -2,6 +2,8 @@ A hangman game.
 
 A commandline/console game written in Ruby. 
 
+Requirements created before the application implementation. 
+
 A human player plays against a computer. A computer has a predefined file with 10,000 words to select from. 
   - When a game is started, a random word is selected by a computer player to guess.
   - A human player guesses a word that a computer has selected for a game. 
@@ -27,9 +29,13 @@ Flow details
   - show to a user if a guess is correct or not 
   - show to a use when the fail attempts are over and the game is over 
 
+Word 
+  - take a word from a file based on a random number 
+  - do checks of a player entry against the word 
+    - check if a letter exists
+
 Game
- - generate a word
- - check if a letter exists
+ - manage requests to a word
  - check if a word is entered 
  - manages attempts 
 
@@ -40,7 +46,7 @@ Game
  - start a game 
  - manage letter entry - do round 
 
-State
+Game state
  - word selected by comp
  - current round
  - number of failed attempts
@@ -71,6 +77,6 @@ Deserialize
  - read array of games 
  - deserialize into an array of game states 
  - show templates list of the saved games
- - once a game is selected, this object is deleted from the file
+ - once a game is selected an played till a computer a or human wins, this game object is deleted from the file
 
 
