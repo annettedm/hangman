@@ -22,7 +22,7 @@ class Loader
 
       player_entry saved_games_count
 
-      {@game_index => saved_games[@game_index]} unless @game_index.nil?
+      { @game_index => saved_games[@game_index] } unless @game_index.nil?
     end
   end
 

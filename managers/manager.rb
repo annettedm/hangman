@@ -49,7 +49,6 @@ class Manager
       @game.add_round
 
       round_instructions
-      # puts "the word is #{@game.show_word}"
       entry = get_alpha_entry
 
       if include_control? entry
@@ -126,12 +125,3 @@ class Manager
     end
   end
 end
-
-# Manager
-# - load game
-# - save game
-# - select saved games or start a new one
-
-#   - A human player may save a game at any round.
-#   - A human player may start one of the saved games with the word where they have left previous time.
-#   - A human player may start a new game while playing a current one or once the game ends.

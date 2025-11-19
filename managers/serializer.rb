@@ -45,9 +45,7 @@ class Serializer
     file = games_from_file
     if file.length > 0
       parsed_data = @@serializer.parse file
-      # puts "parsed data: #{parsed_data}"
       parsed_data.each do |game_string|
-        # puts "game string: #{game_string}"
         saved_game = SavedGame.new "", 0, 0, [], [], []
 
         saved_game.unserialize(game_string)
