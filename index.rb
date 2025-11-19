@@ -1,12 +1,12 @@
-require_relative './manager'
+require_relative './managers/manager'
 
-def start_game
-  result = Manager.new.start_game
+def start_app
+  result = Manager.new.start_app
 
-  if result && result[:new_game]
+  if result == :new
     puts "******************* New Game *******************"
-    start_game
+    start_app
   end
 end
 
-start_game
+start_app
